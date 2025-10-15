@@ -29,7 +29,7 @@ def draw_graph(view, spacing=SPACING):
 
 
 def label_x_axis(view):
-    font = QFont("Arial", 10)
+    font = QFont("Arial", 10, QFont.Weight.Bold)
     rect = view.scene.sceneRect()
 
     # label interval setup
