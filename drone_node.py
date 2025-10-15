@@ -1,0 +1,71 @@
+from PyQt6.QtWidgets import QGraphicsItem
+from PyQt6.QtGui import QBrush, QColor, QPen, QPolygonF
+from PyQt6.QtCore import QRectF, QPointF
+import math
+
+from constants import *
+
+class DroneItem(QGraphicsItem):
+    def __init__(self, id, x, y, t, v, heading, parent=None):
+        super().__init__(parent)
+
+        # drone features
+        self.id = id
+        self.x = x
+        self.y = y
+        self.t = t
+        self.v = v
+        self.heading = heading
+        self.set_display_coordinates()
+
+    def set_display_coordinates(self):
+        def scale_x(x):
+            return ((DISPLAY_WIDTH - MARGIN) - (self.x + AZIMUTH_DEGREES) *
+                    (DISPLAY_WIDTH - 2 * MARGIN) / (AZIMUTH_DEGREES * 2))
+
+        def scale_y(y):
+            return ((DISPLAY_HEIGHT - MARGIN) - self.y *
+                    (DISPLAY_HEIGHT - 2 * MARGIN) / MAX_DISTANCE_M)
+
+        x_scaled = scale_x(self.x)
+        y_scaled = scale_y(self.y)
+        self.setPos(x_scaled, y_scaled)
+
+    def boundingRect(self) -> QRectF:
+        size = CIRCLE_RADIUS
+        return QRectF(-size, -size, size * 2, size * 2)
+
+    def paint(self, painter, option, widget=None):
+        pen = QPen(QColor(0, 255, 0))
+        pen.setWidth(3)
+
+        # central circle
+        painter.setBrush(QBrush(QColor(0, 255, 0)))
+        painter.setPen(pen)
+        painter.drawEllipse(QPointF(0, 0), CIRCLE_RADIUS, CIRCLE_RADIUS)
+
+        # arrow shaft pointing in direction of motion
+        arrow_length = self.v * ARROW_LENGTH_SF
+        angle_rad = math.radians((self.heading + 270) % 360)
+
+        x_end = arrow_length * math.cos(angle_rad)
+        y_end = arrow_length * math.sin(angle_rad)
+        end_point = QPointF(x_end, y_end)
+
+        painter.drawLine(QPointF(0, 0), end_point)
+
+        # arrow head
+        left_angle = angle_rad + math.radians(150)
+        right_angle = angle_rad - math.radians(150)
+
+        left_point = QPointF(
+            x_end + ARROW_HEAD_SIZE * math.cos(left_angle),
+            y_end + ARROW_HEAD_SIZE * math.sin(left_angle)
+        )
+        right_point = QPointF(
+            x_end + ARROW_HEAD_SIZE * math.cos(right_angle),
+            y_end + ARROW_HEAD_SIZE * math.sin(right_angle)
+        )
+
+        arrow_head = QPolygonF([end_point, left_point, right_point])
+        painter.drawPolygon(arrow_head)

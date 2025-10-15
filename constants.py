@@ -1,0 +1,14 @@
+# radar scope
+MAX_DISTANCE_M = 20
+AZIMUTH_DEGREES = 60
+
+# radar display
+DISPLAY_WIDTH = 1250
+DISPLAY_HEIGHT = 700
+MARGIN = 25
+SPACING = 50
+
+# drone node
+CIRCLE_RADIUS = 10
+ARROW_LENGTH_SF = 25    # px per m/s
+ARROW_HEAD_SIZE = 20

@@ -10,13 +10,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PlutoRDD - GUI")
         self.showMaximized()
 
-        self.radar_display = RadarGraphicsView()
-
+        # main window container setup
         container = QWidget()
         layout = QHBoxLayout()
         container.setLayout(layout)
         self.setCentralWidget(container)
 
+        # main window widgets
+        self.radar_display = RadarGraphicsView()
         layout.addWidget(self.radar_display)
 
 if __name__ == "__main__":
