@@ -39,7 +39,7 @@ def label_x_axis(view):
     y_axis_pos = rect.bottom() - MARGIN
 
     x = x_start
-    x_val = -AZIMUTH_DEGREES
+    x_val = -MAX_AZIMUTH_DEGREES
     while x <= x_end:
         # label text
         label_sign = "+" if x_val > 0 else ""

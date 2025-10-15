@@ -1,11 +1,14 @@
-from PyQt6.QtWidgets import QGraphicsItem
-from PyQt6.QtGui import QBrush, QColor, QPen, QPolygonF
-from PyQt6.QtCore import QRectF, QPointF
 import math
+
+from PyQt6.QtWidgets import QGraphicsObject
+from PyQt6.QtGui import QBrush, QColor, QPen, QPolygonF
+from PyQt6.QtCore import QPointF, QRectF, Qt, pyqtSignal
 
 from constants import *
 
-class DroneItem(QGraphicsItem):
+class DroneObject(QGraphicsObject):
+    select_signal = pyqtSignal(object)
+
     def __init__(self, id, x, y, t, v, heading, parent=None):
         super().__init__(parent)
 
@@ -16,12 +19,14 @@ class DroneItem(QGraphicsItem):
         self.t = t
         self.v = v
         self.heading = heading
+
+        self.setFlag(QGraphicsObject.GraphicsItemFlag.ItemIsSelectable, True)
         self.set_display_coordinates()
 
     def set_display_coordinates(self):
         def scale_x(x):
-            return ((DISPLAY_WIDTH - MARGIN) - (self.x + AZIMUTH_DEGREES) *
-                    (DISPLAY_WIDTH - 2 * MARGIN) / (AZIMUTH_DEGREES * 2))
+            return (MARGIN + (self.x + MAX_AZIMUTH_DEGREES) *
+                    (DISPLAY_WIDTH - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2))
 
         def scale_y(y):
             return ((DISPLAY_HEIGHT - MARGIN) - self.y *
@@ -32,16 +37,13 @@ class DroneItem(QGraphicsItem):
         self.setPos(x_scaled, y_scaled)
 
     def boundingRect(self) -> QRectF:
-        size = CIRCLE_RADIUS
-        return QRectF(-size, -size, size * 2, size * 2)
+        arrow_length = self.v * ARROW_LENGTH_SF
+        return QRectF(-arrow_length, -arrow_length, arrow_length * 2, arrow_length * 2)
 
     def paint(self, painter, option, widget=None):
-        pen = QPen(QColor(0, 255, 0))
-        pen.setWidth(3)
-
-        # central circle
+        # green circle marker
         painter.setBrush(QBrush(QColor(0, 255, 0)))
-        painter.setPen(pen)
+        painter.setPen(QPen(QColor(0, 255, 0), 3))
         painter.drawEllipse(QPointF(0, 0), CIRCLE_RADIUS, CIRCLE_RADIUS)
 
         # arrow shaft pointing in direction of motion
@@ -69,3 +71,25 @@ class DroneItem(QGraphicsItem):
 
         arrow_head = QPolygonF([end_point, left_point, right_point])
         painter.drawPolygon(arrow_head)
+
+        # white square highlight
+        if self.isSelected():
+            side = CIRCLE_RADIUS * 3
+
+            corners = [
+                QPointF(-side/2, -side/2),
+                QPointF(side/2, -side/2),
+                QPointF(side/2, side/2),
+                QPointF(-side/2, side/2)
+            ]
+
+            square = QPolygonF(corners)
+
+            painter.setPen(QPen(QColor(255, 255, 255), 1))
+            painter.setBrush(QBrush(Qt.BrushStyle.NoBrush))
+            painter.drawPolygon(square)
+
+    def itemChange(self, change, value):
+        if change == QGraphicsObject.GraphicsItemChange.ItemSelectedHasChanged and value:
+            self.select_signal.emit(self)
+        return super().itemChange(change, value)

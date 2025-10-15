@@ -1,6 +1,6 @@
-# radar scope
+# radar constraints
 MAX_DISTANCE_M = 20
-AZIMUTH_DEGREES = 60
+MAX_AZIMUTH_DEGREES = 60
 
 # radar display
 DISPLAY_WIDTH = 1250
