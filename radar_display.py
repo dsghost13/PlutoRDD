@@ -35,9 +35,30 @@ class RadarGraphicsView(QGraphicsView):
             DroneObject(id=2, x=30, y=5, t=0, v=6, heading=300),
         ]
 
-        for drone in drones:
+        # Assigning custom colors per drone
+        colors = [
+            QColor(153, 0, 255),    # Neon Purple (Drone 0)
+            QColor(248, 231, 28),   # Yellow (Drone 1)
+            QColor(255, 33, 179),   # Neon Pink (Drone 2)
+        ]
+
+        # Bolding the vertical grid line where the drone is located
+        self.highlight_drone_columns(drones)
+
+        for i, drone in enumerate(drones):
+            drone.color = colors[i % len(colors)]
             drone.select_signal.connect(self.update_selected_drone)
             self.scene.addItem(drone)
+
+    def highlight_drone_columns(self, drones):
+        for drone in drones:
+            # Converting azimuth degrees to X screen coordinate (same scaling formula)
+            x = MARGIN + (drone.x + MAX_AZIMUTH_DEGREES) * (DISPLAY_WIDTH - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2)
+
+            # Drawing a bold vertical line at drone's X position
+            pen = QPen(Qt.GlobalColor.green)
+            pen.setWidth(5) # Thicker than grid lines
+            self.scene.addLine(x, MARGIN, x, DISPLAY_HEIGHT - MARGIN, pen)
 
     def update_selected_drone(self, drone):
         data = {

@@ -41,9 +41,10 @@ class DroneObject(QGraphicsObject):
         return QRectF(-arrow_length, -arrow_length, arrow_length * 2, arrow_length * 2)
 
     def paint(self, painter, option, widget=None):
-        # green circle marker
-        painter.setBrush(QBrush(QColor(153, 0, 255)))
-        painter.setPen(QPen(QColor(153, 0, 255), 3))
+        # Dynamic per-drone color (fallback to purple if none is assigned)
+        color = getattr(self, 'color', QColor(153, 0, 255))
+        painter.setBrush(QBrush(color))
+        painter.setPen(QPen(color, 3))
         painter.drawEllipse(QPointF(0, 0), CIRCLE_RADIUS, CIRCLE_RADIUS)
 
         # arrow shaft pointing in direction of motion
