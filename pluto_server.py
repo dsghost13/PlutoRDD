@@ -1,10 +1,10 @@
 import socket
 
-HOST = '172.29.234.51'
+HOST_IP = '172.29.234.51'
 PORT = 12345
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
+server_socket.bind((HOST_IP, PORT))
 server_socket.listen(1)
 print(f"Server listening on port {PORT}...")
 

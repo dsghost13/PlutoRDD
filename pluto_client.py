@@ -13,8 +13,7 @@ def receive():
             data = client_socket.recv(BUFFER_SIZE)
             if not data:
                 break
-            else:
-                print(data.decode())
+            print(data.decode())
         except Exception as e:
             print(f"Connection error: {e}")
             break
