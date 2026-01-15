@@ -13,6 +13,6 @@ print(f"Client connected from {addr}")
 
 try:
     while True:
-        connection.send(bytes("Hello, World!", "utf-8"))
+        connection.send(bytes(input("> "), "utf-8"))
 finally:
     connection.close()
