@@ -11,15 +11,15 @@ class DroneObject(QGraphicsObject):
 
     def __init__(self, drone_data, parent=None):
         """
-        drone_id      : int
-        range_mL      : float
+        id      : int
+        range_m       : float
         velocity_mps  : float 
         power_db      : float
         azimuth_deg   : float
         quality       : float
         """
         super().__init__(parent)
-        self.drone_id = drone_data["id"]
+        self.id = drone_data["id"]
         self.range_m = drone_data["range_m"]
         self.velocity_mps = drone_data["velocity_mps"]    # signage defined consistently by us
         self.power_db = drone_data["power_db"]

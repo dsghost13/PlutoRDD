@@ -30,13 +30,6 @@ class RadarGraphicsView(QGraphicsView):
 
     # TODO: fetch drone tracks from external source
     def display_drones(self, drones=DETECTED_DRONES):
-        # test drones
-        drones = [
-            DroneObject(id=0, x=0, y=10, t=0, v=4, heading=210),
-            DroneObject(id=1, x=-30, y=15, t=0, v=2, heading=60),
-            DroneObject(id=2, x=30, y=5, t=0, v=6, heading=300),
-        ]
-
         # Assigning custom colors per drone
         colors = [
             QColor(153, 0, 255),    # Neon Purple (Drone 0)
@@ -56,20 +49,18 @@ class RadarGraphicsView(QGraphicsView):
         for drone in drones:
             # Converting azimuth degrees to X screen coordinate (same scaling formula)
             x = MARGIN + (drone.x + MAX_AZIMUTH_DEGREES) * (DISPLAY_WIDTH - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2)
-
-            # Drawing a bold vertical line at drone's X position
+            pen.setWidth(5) 
             pen = QPen(Qt.GlobalColor.green)
-            pen.setWidth(5) # Thicker than grid lines
             self.scene.addLine(x, MARGIN, x, DISPLAY_HEIGHT - MARGIN, pen)
 
     def update_selected_drone(self, drone):
         data = {
             "ID": drone.id,
-            "Azimuth": drone.x,
-            "Distance": drone.y,
-            "Time": drone.t,
-            "Velocity": drone.v,
-            "Heading": drone.heading,
+            "Range": drone.range_m,
+            "Velocity": drone.velocity_mps,
+            "Power": drone.power_db,
+            "Azimuth": drone.azimuth_deg,
+            "Quality": drone.quality,
         }
         self.drone_select_signal.emit(data)
 

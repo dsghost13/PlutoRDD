@@ -9,9 +9,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("PlutoRDD - GUI")
-        self.showMaximized()
-
         # main window container setup
         container = QWidget()
         layout = QHBoxLayout()
@@ -27,13 +24,13 @@ class MainWindow(QMainWindow):
         # event connections
         self.radar_display.drone_select_signal.connect(self.drone_data_pane.update_values)
 
-    def test(self):
-        self.radar_display.display_drones()
+        self.setWindowTitle("PlutoRDD - GUI")
+        self.showMaximized()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
 
     window.show()
-    window.test()
     app.exec()

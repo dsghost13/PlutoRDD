@@ -1,10 +1,19 @@
 import zmq
 import json
-
+import os, csv, time, threading
+from drone_node import DroneObject
 from radar_display import DETECTED_DRONES
 
 RADAR_IP = "192.168.1.50"
 RADAR_PORT = 5555
+
+# --- CSV Module ---
+LOG_DIR = "logs"
+FRAMES_CSV = os.path.join(LOG_DIR, "frames.csv")
+DETECTIONS_CSV = os.path.join(LOG_DIR, "detections.csv")
+
+_csv_lock = threading.Lock()
+_last_frame_id = None
 
 def receive_frames():
     context = zmq.Context()

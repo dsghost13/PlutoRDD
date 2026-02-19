@@ -6,7 +6,7 @@ class DroneDataPane(QWidget):
     def __init__(self):
         super().__init__()
 
-        fields = ['ID', 'Azimuth', 'Distance', 'Time', 'Velocity', 'Heading']
+        fields = ['ID', 'Range', 'Velocity', 'Power', 'Azimuth', 'Quality']
         self.values = {}
 
         cell_style = """
@@ -59,7 +59,7 @@ class DroneDataPane(QWidget):
         outer_layout.addWidget(filler)
 
     def update_values(self, data):
-        units = ['', '°', ' m', ' ns', ' m/s', '°']
+        units = ['', 'm', ' m/s', ' db', '°', '']
         for (field, value), unit in zip(data.items(), units):
             value_label = self.values.get(field)
             value_label.setText(f'{str(value)}{unit}')
