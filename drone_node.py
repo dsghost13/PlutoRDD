@@ -9,16 +9,22 @@ from constants import *
 class DroneObject(QGraphicsObject):
     select_signal = pyqtSignal(object)
 
-    def __init__(self, id, x, y, t, v, heading, parent=None):
+    def __init__(self, drone_data, parent=None):
+        """
+        drone_id      : int
+        range_mL      : float
+        velocity_mps  : float 
+        power_db      : float
+        azimuth_deg   : float
+        quality       : float
+        """
         super().__init__(parent)
-
-        # drone features
-        self.id = id
-        self.x = x
-        self.y = y
-        self.t = t
-        self.v = v
-        self.heading = heading
+        self.drone_id = drone_data["id"]
+        self.range_m = drone_data["range_m"]
+        self.velocity_mps = drone_data["velocity_mps"]    # signage defined consistently by us
+        self.power_db = drone_data["power_db"]
+        self.azimuth_deg = drone_data["azimuth_deg"]
+        self.quality = drone_data["quality"]              # [0, 1]
 
         self.setFlag(QGraphicsObject.GraphicsItemFlag.ItemIsSelectable, True)
         self.set_display_coordinates()

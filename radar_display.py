@@ -5,6 +5,8 @@ from PyQt6.QtGui import QBrush, QColor, QPainter
 from graph_elements import *
 from drone_node import DroneObject
 
+DETECTED_DRONES = []
+
 class RadarGraphicsView(QGraphicsView):
     drone_select_signal = pyqtSignal(dict)
 
@@ -27,7 +29,7 @@ class RadarGraphicsView(QGraphicsView):
         label_y_axis(self)
 
     # TODO: fetch drone tracks from external source
-    def display_drones(self, drones=None):
+    def display_drones(self, drones=DETECTED_DRONES):
         # test drones
         drones = [
             DroneObject(id=0, x=0, y=10, t=0, v=4, heading=210),
@@ -50,7 +52,7 @@ class RadarGraphicsView(QGraphicsView):
             drone.select_signal.connect(self.update_selected_drone)
             self.scene.addItem(drone)
 
-    def highlight_drone_columns(self, drones):
+    def highlight_drone_columns(self, drones=DETECTED_DRONES):
         for drone in drones:
             # Converting azimuth degrees to X screen coordinate (same scaling formula)
             x = MARGIN + (drone.x + MAX_AZIMUTH_DEGREES) * (DISPLAY_WIDTH - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2)
