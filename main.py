@@ -1,12 +1,14 @@
 import sys
+import threading
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QVBoxLayout, QTabWidget
 
+from src.data.zmq import receive_frames
 from src.configs.constants import E
 from src.display.radar_display import RadarGraphicsView
 from src.display.data_pane import DroneDataPane
-
+from src.display.csv_tab import CsvDataTab
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,6 +25,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PlutoRDD")
         self.showMaximized()
 
+        # Start frame receiver in background
+        threading.Thread(target=receive_frames, daemon=True).start()
+
+        # Refresh radar periodically so new detections show up
+        self._radar_timer = QTimer(self)
+        self._radar_timer.timeout.connect(self.radar_display.refresh)
+        self._radar_timer.start(200)  # ms
 
     def _get_tab_widget(self):
         tabs = QTabWidget()
@@ -32,6 +41,7 @@ class MainWindow(QMainWindow):
         tabs.setTabPosition(QTabWidget.TabPosition.North)
 
         tabs.addTab(self._get_display_widget(), "Radar Display")
+        tabs.addTab(self._get_csv_widget(), "CSV Data")
         return tabs
 
     def _get_display_widget(self):
@@ -47,6 +57,9 @@ class MainWindow(QMainWindow):
         display_widget.setLayout(display_layout)
         return display_widget
 
+    def _get_csv_widget(self):
+        self.csv_tab = CsvDataTab()
+        return self.csv_tab
 
 def main():
     app = QApplication(sys.argv)

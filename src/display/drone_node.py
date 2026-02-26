@@ -6,10 +6,16 @@ from PyQt6.QtCore import QPointF, QRectF, Qt, pyqtSignal
 
 from src.configs.constants import *
 
+def _as_float(x, default=0.0):
+    try:
+        return float(x)
+    except Exception:
+        return default
+
 class DroneObject(QGraphicsObject):
     select_signal = pyqtSignal(object)
 
-    def __init__(self, drone_data, parent=None):
+    def __init__(self, drone_data, scene_rect=None, parent=None):
         """
         id      : int
         range_m       : float
@@ -19,31 +25,44 @@ class DroneObject(QGraphicsObject):
         quality       : float
         """
         super().__init__(parent)
-        self.id = drone_data["id"]
-        self.range_m = drone_data["range_m"]
-        self.velocity_mps = drone_data["velocity_mps"]    # signage defined consistently by us
-        self.power_db = drone_data["power_db"]
-        self.azimuth_deg = drone_data["azimuth_deg"]
-        self.quality = drone_data["quality"]              # [0, 1]
+        self.id = drone_data.get("id", "")
+
+        self.range_m = _as_float(drone_data.get("range_m", 0.0))
+        self.velocity_mps = _as_float(drone_data.get("velocity_mps", 0.0))  # signage defined consistently by us
+        self.power_db = _as_float(drone_data.get("power_db", 0.0))
+        self.azimuth_deg = _as_float(drone_data.get("azimuth_deg", 0.0))
+        self.quality = _as_float(drone_data.get("quality", 0.0))  # [0, 1]
+
+        # --- fields used by set_display_coordinates() and paint() ---
+        self.x = self.azimuth_deg  # x axis = azimuth (deg)
+        self.y = self.range_m  # y axis = range (m)
+        self.v = abs(self.velocity_mps)  # arrow length uses speed magnitude
+        self.heading = self.azimuth_deg + (180.0 if self.velocity_mps < 0 else 0.0)
 
         self.setFlag(QGraphicsObject.GraphicsItemFlag.ItemIsSelectable, True)
-        self.set_display_coordinates()
+        self.set_display_coordinates(scene_rect)
 
-    def set_display_coordinates(self):
+    def set_display_coordinates(self, scene_rect=None):
+        # Use actual scene size if provided; otherwise fall back to constants
+        if scene_rect is None:
+            w = DISPLAY_WIDTH
+            h = DISPLAY_HEIGHT
+        else:
+            w = scene_rect.width()
+            h = scene_rect.height()
+
         def scale_x(x):
-            return (MARGIN + (self.x + MAX_AZIMUTH_DEGREES) *
-                    (DISPLAY_WIDTH - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2))
+            return (MARGIN + (x + MAX_AZIMUTH_DEGREES) *
+                    (w - 2 * MARGIN) / (MAX_AZIMUTH_DEGREES * 2))
 
         def scale_y(y):
-            return ((DISPLAY_HEIGHT - MARGIN) - self.y *
-                    (DISPLAY_HEIGHT - 2 * MARGIN) / MAX_DISTANCE_M)
+            return ((h - MARGIN) - y *
+                    (h - 2 * MARGIN) / MAX_DISTANCE_M)
 
-        x_scaled = scale_x(self.x)
-        y_scaled = scale_y(self.y)
-        self.setPos(x_scaled, y_scaled)
+        self.setPos(scale_x(self.x), scale_y(self.y))
 
     def boundingRect(self) -> QRectF:
-        arrow_length = self.v * ARROW_LENGTH_SF
+        arrow_length = max(1.0, self.v * ARROW_LENGTH_SF)
         return QRectF(-arrow_length, -arrow_length, arrow_length * 2, arrow_length * 2)
 
     def paint(self, painter, option, widget=None):
