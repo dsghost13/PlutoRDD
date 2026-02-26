@@ -2,8 +2,8 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QGraphicsView, QGraphicsScene
 from PyQt6.QtGui import QBrush, QColor, QPainter
 
-from graph_elements import *
-from drone_node import DroneObject
+from src.display.graph_elements import *
+from src.display.drone_node import DroneObject
 
 DETECTED_DRONES = []
 
