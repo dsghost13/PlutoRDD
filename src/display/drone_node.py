@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QGraphicsObject
 from PyQt6.QtGui import QBrush, QColor, QPen, QPolygonF
 from PyQt6.QtCore import QPointF, QRectF, Qt, pyqtSignal
 
-from constants import *
+from src.configs.constants import *
 
 class DroneObject(QGraphicsObject):
     select_signal = pyqtSignal(object)

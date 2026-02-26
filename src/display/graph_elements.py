@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QGraphicsTextItem
 from PyQt6.QtGui import QFont, QPen
 from PyQt6.QtCore import Qt
 
-from constants import *
+from src.configs.constants import *
 
 def draw_graph(view, spacing=SPACING):
     rect = view.scene.sceneRect()

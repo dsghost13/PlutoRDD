@@ -23,7 +23,7 @@ class RadarGraphicsView(QGraphicsView):
         self.setMouseTracking(True)
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        # empty radar display
+        # empty display display
         draw_graph(self)
         label_x_axis(self)
         label_y_axis(self)

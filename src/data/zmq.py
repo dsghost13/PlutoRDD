@@ -1,8 +1,8 @@
 import zmq
 import json
 import os, csv, time, threading
-from drone_node import DroneObject
-from radar_display import DETECTED_DRONES
+from src.display.drone_node import DroneObject
+from src.display.radar_display import DETECTED_DRONES
 
 RADAR_IP = "192.168.1.50"
 RADAR_PORT = 5555
